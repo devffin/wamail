@@ -20,6 +20,7 @@ background:#111;
 color:white;
 height:100vh;
 display:flex;
+transition:0.3s;
 }
 
 .sidebar{
@@ -27,6 +28,7 @@ width:250px;
 background:#1b1b1b;
 padding:20px;
 border-right:1px solid #333;
+transition:0.3s;
 }
 
 .logo{
@@ -72,6 +74,7 @@ display:flex;
 justify-content:space-between;
 align-items:center;
 background:#181818;
+transition:0.3s;
 }
 
 .user{
@@ -122,6 +125,7 @@ border-radius:14px;
 display:flex;
 flex-direction:column;
 gap:12px;
+transition:0.3s;
 }
 
 input, textarea{
@@ -163,6 +167,7 @@ width:350px;
 display:flex;
 flex-direction:column;
 gap:12px;
+transition:0.3s;
 }
 
 .auth-title{
@@ -188,6 +193,73 @@ opacity:0.7;
 cursor:pointer;
 }
 
+.top-btn{
+padding:10px 14px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+background:#2a2a2a;
+color:white;
+transition:0.2s;
+}
+
+.top-btn:hover{
+opacity:0.8;
+}
+
+.logout{
+background:#ff4e4e;
+}
+
+/* =========================
+THEME CLAIR
+========================= */
+
+body.light{
+background:#f4f4f4;
+color:#111;
+}
+
+body.light .sidebar{
+background:white;
+border-right:1px solid #ddd;
+}
+
+body.light .topbar{
+background:white;
+border-bottom:1px solid #ddd;
+}
+
+body.light .mail{
+border-bottom:1px solid #ddd;
+}
+
+body.light .mail:hover{
+background:#ececec;
+}
+
+body.light .modal-content,
+body.light .auth-box{
+background:white;
+color:black;
+}
+
+body.light input,
+body.light textarea{
+background:#f1f1f1;
+color:black;
+border:1px solid #ccc;
+}
+
+body.light .menu-item:hover{
+background:#ececec;
+}
+
+body.light .top-btn{
+background:#ddd;
+color:black;
+}
+
 @media(max-width:700px){
 .sidebar{
 display:none;
@@ -203,12 +275,14 @@ width:95%;
 
 <div class="auth" id="authScreen">
   <div class="auth-box">
-    <div class="auth-title">WaMail</div>
+    <div class="auth-title">Bienvenue sur WaMail</div>
 
     <input type="email" id="email" placeholder="Adresse mail">
     <input type="password" id="password" placeholder="Mot de passe">
 
-    <button class="auth-btn" id="authBtn">Connexion</button>
+    <button class="auth-btn" id="authBtn">
+      Connexion
+    </button>
 
     <div class="switch" id="switchMode">
       Pas encore de compte ? Inscription
@@ -217,7 +291,7 @@ width:95%;
 </div>
 
 <div class="sidebar">
-  <div class="logo">WebMail</div>
+  <div class="logo">WaMail</div>
 
   <button class="compose-btn" id="composeBtn">
     Nouveau message
@@ -228,37 +302,68 @@ width:95%;
 </div>
 
 <div class="main">
+
   <div class="topbar">
-    <div>Boîte de réception</div>
-    <div class="user" id="currentUser"></div>
+
+    <div>
+      Boîte de réception
+    </div>
+
+    <div style="display:flex; gap:10px; align-items:center;">
+
+      <button id="themeBtn" class="top-btn">
+        🌙
+      </button>
+
+      <button id="notifBtn" class="top-btn">
+        🔔
+      </button>
+
+      <div class="user" id="currentUser"></div>
+
+      <button id="logoutBtn" class="top-btn logout">
+        Déconnexion
+      </button>
+
+    </div>
+
   </div>
 
   <div class="mail-list" id="mailList"></div>
+
 </div>
 
 <div class="modal" id="modal">
   <div class="modal-content">
+
     <input type="email" id="receiver" placeholder="Destinataire">
+
     <input type="text" id="subject" placeholder="Sujet">
+
     <textarea id="content" placeholder="Votre message..."></textarea>
 
     <button class="send-btn" id="sendBtn">
       Envoyer
     </button>
+
   </div>
 </div>
 
 <script>
 // =========================
-// REMPLACE CES VALEURS
+// SUPABASE
 // =========================
 
 const SUPABASE_URL = "https://hulbzibpjpycbasuxuqs.supabase.co";
+
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1bGJ6aWJwanB5Y2Jhc3V4dXFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3ODUwMjAsImV4cCI6MjA5NTM2MTAyMH0.nW2IZp0Jd7L5nGM0ZzC-jvpLxenoHK2yelT1L2359oU";
 
-// =========================
+const client = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
-const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// =========================
 
 let isLogin = true;
 let currentUser = null;
@@ -269,10 +374,17 @@ const switchMode = document.getElementById("switchMode");
 const mailList = document.getElementById("mailList");
 const currentUserText = document.getElementById("currentUser");
 
+// =========================
+// LOGIN / REGISTER
+// =========================
+
 switchMode.onclick = () => {
+
   isLogin = !isLogin;
 
-  authBtn.innerText = isLogin ? "Connexion" : "Inscription";
+  authBtn.innerText = isLogin
+  ? "Connexion"
+  : "Inscription";
 
   switchMode.innerText = isLogin
   ? "Pas encore de compte ? Inscription"
@@ -280,11 +392,17 @@ switchMode.onclick = () => {
 };
 
 authBtn.onclick = async () => {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+
+  const email =
+  document.getElementById("email").value;
+
+  const password =
+  document.getElementById("password").value;
 
   if(isLogin){
-    const { error } = await client.auth.signInWithPassword({
+
+    const { error } =
+    await client.auth.signInWithPassword({
       email,
       password
     });
@@ -292,8 +410,11 @@ authBtn.onclick = async () => {
     if(error){
       alert(error.message);
     }
+
   }else{
-    const { error } = await client.auth.signUp({
+
+    const { error } =
+    await client.auth.signUp({
       email,
       password
     });
@@ -301,24 +422,36 @@ authBtn.onclick = async () => {
     if(error){
       alert(error.message);
     }else{
-      alert("Compte créé ! Vérifie tes mails.");
+      alert("Compte créé !");
     }
+
   }
 };
 
+// =========================
+// LOAD MESSAGES
+// =========================
+
 async function loadMessages(){
+
   if(!currentUser) return;
 
   const { data } = await client
   .from("messages")
   .select("*")
-  .or(`receiver.eq.${currentUser.email},sender.eq.${currentUser.email}`)
-  .order("created_at", { ascending:false });
+  .or(
+    `receiver.eq.${currentUser.email},sender.eq.${currentUser.email}`
+  )
+  .order("created_at", {
+    ascending:false
+  });
 
   mailList.innerHTML = "";
 
   data.forEach(mail => {
+
     const div = document.createElement("div");
+
     div.className = "mail";
 
     div.innerHTML = `
@@ -336,63 +469,112 @@ async function loadMessages(){
     `;
 
     div.onclick = () => {
+
       alert(
         `Sujet : ${mail.subject}\n\n` +
         `De : ${mail.sender}\n\n` +
         `${mail.content}`
       );
+
     };
 
     mailList.appendChild(div);
+
   });
+
 }
 
-client.auth.onAuthStateChange(async (event, session) => {
+// =========================
+// AUTH STATE
+// =========================
+
+client.auth.onAuthStateChange(
+async (event, session) => {
+
   if(session){
+
     currentUser = session.user;
 
     authScreen.style.display = "none";
 
-    currentUserText.innerText = currentUser.email;
+    currentUserText.innerText =
+    currentUser.email;
 
     loadMessages();
+
+    checkNotifications();
+
+  }else{
+
+    authScreen.style.display = "flex";
+
   }
+
 });
+
+// =========================
+// MODAL
+// =========================
 
 const modal = document.getElementById("modal");
 
 document.getElementById("composeBtn").onclick = () => {
+
   modal.style.display = "flex";
+
 };
 
 modal.onclick = (e) => {
+
   if(e.target === modal){
+
     modal.style.display = "none";
+
   }
+
 };
 
-document.getElementById("sendBtn").onclick = async () => {
-  const receiver = document.getElementById("receiver").value;
-  const subject = document.getElementById("subject").value;
-  const content = document.getElementById("content").value;
+// =========================
+// SEND MESSAGE
+// =========================
+
+document.getElementById("sendBtn").onclick =
+async () => {
+
+  const receiver =
+  document.getElementById("receiver").value;
+
+  const subject =
+  document.getElementById("subject").value;
+
+  const content =
+  document.getElementById("content").value;
 
   if(!receiver || !content){
+
     alert("Message incomplet");
+
     return;
+
   }
 
   const { error } = await client
   .from("messages")
   .insert({
+
     sender: currentUser.email,
     receiver,
     subject,
     content
+
   });
 
   if(error){
+
     alert(error.message);
+
   }else{
+
     alert("Message envoyé !");
 
     modal.style.display = "none";
@@ -402,10 +584,140 @@ document.getElementById("sendBtn").onclick = async () => {
     document.getElementById("content").value = "";
 
     loadMessages();
+
   }
+
 };
 
+// =========================
+// LOGOUT
+// =========================
+
+document.getElementById("logoutBtn").onclick =
+async () => {
+
+  await client.auth.signOut();
+
+  currentUser = null;
+
+  authScreen.style.display = "flex";
+
+  currentUserText.innerText = "";
+
+  mailList.innerHTML = "";
+
+};
+
+// =========================
+// THEME
+// =========================
+
+const themeBtn =
+document.getElementById("themeBtn");
+
+let darkMode =
+localStorage.getItem("theme") !== "light";
+
+function updateTheme(){
+
+  if(darkMode){
+
+    document.body.classList.remove("light");
+
+    themeBtn.innerText = "🌙";
+
+  }else{
+
+    document.body.classList.add("light");
+
+    themeBtn.innerText = "☀️";
+
+  }
+
+  localStorage.setItem(
+    "theme",
+    darkMode ? "dark" : "light"
+  );
+
+}
+
+updateTheme();
+
+themeBtn.onclick = () => {
+
+  darkMode = !darkMode;
+
+  updateTheme();
+
+};
+
+// =========================
+// NOTIFICATIONS
+// =========================
+
+const notifBtn =
+document.getElementById("notifBtn");
+
+notifBtn.onclick = async () => {
+
+  const permission =
+  await Notification.requestPermission();
+
+  if(permission === "granted"){
+
+    alert("Notifications activées !");
+
+  }
+
+};
+
+let knownMessages = 0;
+
+async function checkNotifications(){
+
+  if(!currentUser) return;
+
+  const { data } = await client
+  .from("messages")
+  .select("*")
+  .eq("receiver", currentUser.email);
+
+  if(!data) return;
+
+  if(
+    knownMessages !== 0 &&
+    data.length > knownMessages
+  ){
+
+    const latest =
+    data[data.length - 1];
+
+    if(Notification.permission === "granted"){
+
+      new Notification(
+        "Nouveau message",
+        {
+          body:
+          latest.sender +
+          " : " +
+          latest.subject
+        }
+      );
+
+    }
+
+  }
+
+  knownMessages = data.length;
+
+}
+
+// =========================
+
 setInterval(loadMessages, 3000);
+
+setInterval(checkNotifications, 3000);
+
 </script>
 
 </body>
