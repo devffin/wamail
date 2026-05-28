@@ -1,9 +1,14 @@
+```html
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>WaMail</title>
+
+<!-- FAVICON -->
+<link rel="icon" type="image/png" href="logo.png">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
@@ -23,19 +28,33 @@ display:flex;
 transition:0.3s;
 }
 
+/* =========================
+SIDEBAR
+========================= */
+
 .sidebar{
 width:250px;
 background:#1b1b1b;
 padding:20px;
 border-right:1px solid #333;
 transition:0.3s;
+overflow-y:auto;
 }
 
 .logo{
+display:flex;
+align-items:center;
+gap:10px;
 font-size:28px;
 font-weight:bold;
 margin-bottom:30px;
 color:#4ea1ff;
+}
+
+.logo-img{
+width:42px;
+height:42px;
+object-fit:contain;
 }
 
 .compose-btn{
@@ -55,11 +74,16 @@ padding:12px;
 border-radius:10px;
 cursor:pointer;
 margin-bottom:8px;
+transition:0.2s;
 }
 
 .menu-item:hover{
 background:#2b2b2b;
 }
+
+/* =========================
+MAIN
+========================= */
 
 .main{
 flex:1;
@@ -108,6 +132,10 @@ opacity:0.7;
 font-size:14px;
 }
 
+/* =========================
+MODAL
+========================= */
+
 .modal{
 position:fixed;
 inset:0;
@@ -149,6 +177,10 @@ color:white;
 border-radius:8px;
 cursor:pointer;
 }
+
+/* =========================
+AUTH
+========================= */
 
 .auth{
 position:fixed;
@@ -193,6 +225,10 @@ opacity:0.7;
 cursor:pointer;
 }
 
+/* =========================
+TOP BUTTONS
+========================= */
+
 .top-btn{
 padding:10px 14px;
 border:none;
@@ -212,7 +248,7 @@ background:#ff4e4e;
 }
 
 /* =========================
-THEME CLAIR
+LIGHT THEME
 ========================= */
 
 body.light{
@@ -260,7 +296,40 @@ background:#ddd;
 color:black;
 }
 
+/* =========================
+RED SECRET THEME
+========================= */
+
+body.red-theme{
+background:#2b0000;
+color:white;
+}
+
+body.red-theme .sidebar{
+background:#3a0000;
+border-right:1px solid #700;
+}
+
+body.red-theme .topbar{
+background:#400000;
+border-bottom:1px solid #700;
+}
+
+body.red-theme .compose-btn,
+body.red-theme .send-btn{
+background:#ff2e2e;
+}
+
+body.red-theme .logo{
+color:#ff4e4e;
+}
+
+/* =========================
+RESPONSIVE
+========================= */
+
 @media(max-width:700px){
+
 .sidebar{
 display:none;
 }
@@ -268,16 +337,24 @@ display:none;
 .modal-content{
 width:95%;
 }
+
 }
 </style>
 </head>
 <body>
 
+<!-- AUTH -->
+
 <div class="auth" id="authScreen">
+
   <div class="auth-box">
-    <div class="auth-title">Bienvenue sur WaMail</div>
+
+    <div class="auth-title">
+      Bienvenue sur WaMail
+    </div>
 
     <input type="email" id="email" placeholder="Adresse mail">
+
     <input type="password" id="password" placeholder="Mot de passe">
 
     <button class="auth-btn" id="authBtn">
@@ -287,25 +364,51 @@ width:95%;
     <div class="switch" id="switchMode">
       Pas encore de compte ? Inscription
     </div>
+
   </div>
+
 </div>
 
+<!-- SIDEBAR -->
+
 <div class="sidebar">
-  <div class="logo">WaMail</div>
+
+  <div class="logo">
+    <img src="logo.png" class="logo-img">
+    <span>WaMail</span>
+  </div>
 
   <button class="compose-btn" id="composeBtn">
     Nouveau message
   </button>
 
-  <div class="menu-item">📥 Réception</div>
-  <div class="menu-item">📤 Envoyés</div>
+  <div class="menu-item" onclick="openFolder('inbox')">
+    📥 Réception
+  </div>
+
+  <div class="menu-item" onclick="openFolder('sent')">
+    📤 Envoyés
+  </div>
+
+  <div class="menu-item" onclick="openFolder('spam')">
+    🚫 Spam
+  </div>
+
+  <div id="customFolders"></div>
+
+  <div class="menu-item" onclick="createFolder()">
+    ➕ Nouveau dossier
+  </div>
+
 </div>
+
+<!-- MAIN -->
 
 <div class="main">
 
   <div class="topbar">
 
-    <div>
+    <div id="folderTitle">
       Boîte de réception
     </div>
 
@@ -333,7 +436,10 @@ width:95%;
 
 </div>
 
+<!-- MODAL -->
+
 <div class="modal" id="modal">
+
   <div class="modal-content">
 
     <input type="email" id="receiver" placeholder="Destinataire">
@@ -347,18 +453,26 @@ width:95%;
     </button>
 
   </div>
+
 </div>
 
+<!-- SON NOTIF -->
+<audio id="notifSound" src="notification.mp3"></audio>
+
 <script>
+
 // =========================
 // SUPABASE
 // =========================
 
-const SUPABASE_URL = "https://hulbzibpjpycbasuxuqs.supabase.co";
+const SUPABASE_URL =
+"https://hulbzibpjpycbasuxuqs.supabase.co";
 
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1bGJ6aWJwanB5Y2Jhc3V4dXFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3ODUwMjAsImV4cCI6MjA5NTM2MTAyMH0.nW2IZp0Jd7L5nGM0ZzC-jvpLxenoHK2yelT1L2359oU";
+const SUPABASE_KEY =
+"sb_publishable_DRqj6_oPdng5N5i5hUNOCg_Bf8zHKYr";
 
-const client = supabase.createClient(
+const client =
+supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
@@ -367,12 +481,33 @@ const client = supabase.createClient(
 
 let isLogin = true;
 let currentUser = null;
+let currentFolder = "inbox";
+let knownMessages = 0;
 
-const authScreen = document.getElementById("authScreen");
-const authBtn = document.getElementById("authBtn");
-const switchMode = document.getElementById("switchMode");
-const mailList = document.getElementById("mailList");
-const currentUserText = document.getElementById("currentUser");
+// =========================
+// ELEMENTS
+// =========================
+
+const authScreen =
+document.getElementById("authScreen");
+
+const authBtn =
+document.getElementById("authBtn");
+
+const switchMode =
+document.getElementById("switchMode");
+
+const mailList =
+document.getElementById("mailList");
+
+const currentUserText =
+document.getElementById("currentUser");
+
+const modal =
+document.getElementById("modal");
+
+const themeBtn =
+document.getElementById("themeBtn");
 
 // =========================
 // LOGIN / REGISTER
@@ -382,13 +517,16 @@ switchMode.onclick = () => {
 
   isLogin = !isLogin;
 
-  authBtn.innerText = isLogin
+  authBtn.innerText =
+  isLogin
   ? "Connexion"
   : "Inscription";
 
-  switchMode.innerText = isLogin
+  switchMode.innerText =
+  isLogin
   ? "Pas encore de compte ? Inscription"
   : "Déjà un compte ? Connexion";
+
 };
 
 authBtn.onclick = async () => {
@@ -426,63 +564,8 @@ authBtn.onclick = async () => {
     }
 
   }
+
 };
-
-// =========================
-// LOAD MESSAGES
-// =========================
-
-async function loadMessages(){
-
-  if(!currentUser) return;
-
-  const { data } = await client
-  .from("messages")
-  .select("*")
-  .or(
-    `receiver.eq.${currentUser.email},sender.eq.${currentUser.email}`
-  )
-  .order("created_at", {
-    ascending:false
-  });
-
-  mailList.innerHTML = "";
-
-  data.forEach(mail => {
-
-    const div = document.createElement("div");
-
-    div.className = "mail";
-
-    div.innerHTML = `
-      <div class="mail-subject">
-        ${mail.subject || "Sans sujet"}
-      </div>
-
-      <div>
-        De : ${mail.sender}
-      </div>
-
-      <div class="mail-preview">
-        ${mail.content.slice(0,100)}
-      </div>
-    `;
-
-    div.onclick = () => {
-
-      alert(
-        `Sujet : ${mail.subject}\n\n` +
-        `De : ${mail.sender}\n\n` +
-        `${mail.content}`
-      );
-
-    };
-
-    mailList.appendChild(div);
-
-  });
-
-}
 
 // =========================
 // AUTH STATE
@@ -513,12 +596,205 @@ async (event, session) => {
 });
 
 // =========================
+// LOAD MESSAGES
+// =========================
+
+async function loadMessages(){
+
+  if(!currentUser) return;
+
+  let query = client
+  .from("messages")
+  .select("*")
+  .order("created_at", {
+    ascending:false
+  });
+
+  if(currentFolder === "inbox"){
+
+    query =
+    query.eq(
+      "receiver",
+      currentUser.email
+    );
+
+  }
+
+  else if(currentFolder === "sent"){
+
+    query =
+    query.eq(
+      "sender",
+      currentUser.email
+    );
+
+  }
+
+  else if(currentFolder === "spam"){
+
+    query =
+    query.eq(
+      "folder",
+      "spam"
+    );
+
+  }
+
+  else{
+
+    query =
+    query.eq(
+      "folder",
+      currentFolder
+    );
+
+  }
+
+  const { data } = await query;
+
+  mailList.innerHTML = "";
+
+  if(!data) return;
+
+  data.forEach(mail => {
+
+    const div =
+    document.createElement("div");
+
+    div.className = "mail";
+
+    div.innerHTML = `
+      <div class="mail-subject">
+        ${mail.subject || "Sans sujet"}
+      </div>
+
+      <div>
+        De : ${mail.sender}
+      </div>
+
+      <div class="mail-preview">
+        ${mail.content.slice(0,100)}
+      </div>
+    `;
+
+    div.onclick = () => {
+
+      alert(
+        "Sujet : " + mail.subject +
+        "\\n\\nDe : " + mail.sender +
+        "\\n\\n" + mail.content
+      );
+
+    };
+
+    mailList.appendChild(div);
+
+  });
+
+}
+
+// =========================
+// FOLDERS
+// =========================
+
+function openFolder(folder){
+
+  currentFolder = folder;
+
+  document.getElementById(
+    "folderTitle"
+  ).innerText = folder;
+
+  loadMessages();
+
+}
+
+let folders =
+JSON.parse(
+localStorage.getItem("folders")
+) || [];
+
+function renderFolders(){
+
+  const container =
+  document.getElementById(
+    "customFolders"
+  );
+
+  container.innerHTML = "";
+
+  folders.forEach(folder => {
+
+    const div =
+    document.createElement("div");
+
+    div.className = "menu-item";
+
+    div.innerHTML = `
+      📁 ${folder}
+      <span style="float:right;color:red;">
+        ✖
+      </span>
+    `;
+
+    div.onclick = () => {
+
+      openFolder(folder);
+
+    };
+
+    div.querySelector("span")
+    .onclick = (e) => {
+
+      e.stopPropagation();
+
+      folders =
+      folders.filter(
+        f => f !== folder
+      );
+
+      localStorage.setItem(
+        "folders",
+        JSON.stringify(folders)
+      );
+
+      renderFolders();
+
+    };
+
+    container.appendChild(div);
+
+  });
+
+}
+
+function createFolder(){
+
+  const name =
+  prompt("Nom du dossier");
+
+  if(!name) return;
+
+  folders.push(name);
+
+  localStorage.setItem(
+    "folders",
+    JSON.stringify(folders)
+  );
+
+  renderFolders();
+
+}
+
+renderFolders();
+
+// =========================
 // MODAL
 // =========================
 
-const modal = document.getElementById("modal");
-
-document.getElementById("composeBtn").onclick = () => {
+document.getElementById(
+"composeBtn"
+).onclick = () => {
 
   modal.style.display = "flex";
 
@@ -538,8 +814,9 @@ modal.onclick = (e) => {
 // SEND MESSAGE
 // =========================
 
-document.getElementById("sendBtn").onclick =
-async () => {
+document.getElementById(
+"sendBtn"
+).onclick = async () => {
 
   const receiver =
   document.getElementById("receiver").value;
@@ -558,14 +835,16 @@ async () => {
 
   }
 
-  const { error } = await client
+  const { error } =
+  await client
   .from("messages")
   .insert({
 
     sender: currentUser.email,
     receiver,
     subject,
-    content
+    content,
+    folder:"inbox"
 
   });
 
@@ -579,9 +858,17 @@ async () => {
 
     modal.style.display = "none";
 
-    document.getElementById("receiver").value = "";
-    document.getElementById("subject").value = "";
-    document.getElementById("content").value = "";
+    document.getElementById(
+    "receiver"
+    ).value = "";
+
+    document.getElementById(
+    "subject"
+    ).value = "";
+
+    document.getElementById(
+    "content"
+    ).value = "";
 
     loadMessages();
 
@@ -593,8 +880,9 @@ async () => {
 // LOGOUT
 // =========================
 
-document.getElementById("logoutBtn").onclick =
-async () => {
+document.getElementById(
+"logoutBtn"
+).onclick = async () => {
 
   await client.auth.signOut();
 
@@ -612,23 +900,25 @@ async () => {
 // THEME
 // =========================
 
-const themeBtn =
-document.getElementById("themeBtn");
-
 let darkMode =
-localStorage.getItem("theme") !== "light";
+localStorage.getItem("theme")
+!== "light";
 
 function updateTheme(){
 
   if(darkMode){
 
-    document.body.classList.remove("light");
+    document.body.classList.remove(
+      "light"
+    );
 
     themeBtn.innerText = "🌙";
 
   }else{
 
-    document.body.classList.add("light");
+    document.body.classList.add(
+      "light"
+    );
 
     themeBtn.innerText = "☀️";
 
@@ -652,35 +942,84 @@ themeBtn.onclick = () => {
 };
 
 // =========================
+// SECRET RED THEME
+// =========================
+
+let typedKeys = "";
+
+document.addEventListener(
+"keydown",
+(e) => {
+
+  typedKeys +=
+  e.key.toLowerCase();
+
+  if(typedKeys.length > 20){
+
+    typedKeys =
+    typedKeys.slice(-20);
+
+  }
+
+  if(
+    typedKeys.includes("wared")
+  ){
+
+    document.body.classList.toggle(
+      "red-theme"
+    );
+
+    if(
+      Notification.permission
+      === "granted"
+    ){
+
+      new Notification(
+        "❤️ Mode soutien activé"
+      );
+
+    }
+
+    typedKeys = "";
+
+  }
+
+});
+
+// =========================
 // NOTIFICATIONS
 // =========================
 
-const notifBtn =
-document.getElementById("notifBtn");
-
-notifBtn.onclick = async () => {
+document.getElementById(
+"notifBtn"
+).onclick = async () => {
 
   const permission =
-  await Notification.requestPermission();
+  await Notification
+  .requestPermission();
 
   if(permission === "granted"){
 
-    alert("Notifications activées !");
+    alert(
+      "Notifications activées !"
+    );
 
   }
 
 };
 
-let knownMessages = 0;
-
 async function checkNotifications(){
 
   if(!currentUser) return;
 
-  const { data } = await client
+  const { data } =
+  await client
   .from("messages")
   .select("*")
-  .eq("receiver", currentUser.email);
+  .eq(
+    "receiver",
+    currentUser.email
+  );
 
   if(!data) return;
 
@@ -692,7 +1031,16 @@ async function checkNotifications(){
     const latest =
     data[data.length - 1];
 
-    if(Notification.permission === "granted"){
+    if(
+      Notification.permission
+      === "granted"
+    ){
+
+      document
+      .getElementById(
+        "notifSound"
+      )
+      .play();
 
       new Notification(
         "Nouveau message",
@@ -713,12 +1061,21 @@ async function checkNotifications(){
 }
 
 // =========================
+// AUTO REFRESH
+// =========================
 
-setInterval(loadMessages, 3000);
+setInterval(
+loadMessages,
+3000
+);
 
-setInterval(checkNotifications, 3000);
+setInterval(
+checkNotifications,
+3000
+);
 
 </script>
 
 </body>
 </html>
+```
