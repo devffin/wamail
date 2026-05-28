@@ -6,17 +6,17 @@
 
 <title>WaMail</title>
 
-<!-- FAVICON -->
 <link rel="icon" type="image/png" href="logo.png">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <style>
+
 *{
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:Arial, sans-serif;
+font-family:Arial,sans-serif;
 }
 
 body{
@@ -25,6 +25,9 @@ color:white;
 height:100vh;
 display:flex;
 transition:0.3s;
+background-size:cover;
+background-position:center;
+background-repeat:no-repeat;
 }
 
 /* =========================
@@ -38,6 +41,7 @@ padding:20px;
 border-right:1px solid #333;
 transition:0.3s;
 overflow-y:auto;
+backdrop-filter:blur(8px);
 }
 
 .logo{
@@ -88,6 +92,7 @@ MAIN
 flex:1;
 display:flex;
 flex-direction:column;
+backdrop-filter:blur(5px);
 }
 
 .topbar{
@@ -96,8 +101,9 @@ border-bottom:1px solid #333;
 display:flex;
 justify-content:space-between;
 align-items:center;
-background:#181818;
+background:rgba(24,24,24,0.8);
 transition:0.3s;
+backdrop-filter:blur(10px);
 }
 
 .user{
@@ -115,10 +121,11 @@ padding:18px;
 border-bottom:1px solid #222;
 cursor:pointer;
 transition:0.2s;
+background:rgba(0,0,0,0.2);
 }
 
 .mail:hover{
-background:#1d1d1d;
+background:rgba(255,255,255,0.05);
 }
 
 .mail-subject{
@@ -155,7 +162,7 @@ gap:12px;
 transition:0.3s;
 }
 
-input, textarea{
+input,textarea{
 background:#111;
 border:1px solid #333;
 padding:12px;
@@ -188,6 +195,7 @@ display:flex;
 justify-content:center;
 align-items:center;
 background:#0d0d0d;
+z-index:999;
 }
 
 .auth-box{
@@ -198,7 +206,6 @@ width:350px;
 display:flex;
 flex-direction:column;
 gap:12px;
-transition:0.3s;
 }
 
 .auth-title{
@@ -225,7 +232,7 @@ cursor:pointer;
 }
 
 /* =========================
-TOP BUTTONS
+BUTTONS
 ========================= */
 
 .top-btn{
@@ -256,12 +263,12 @@ color:#111;
 }
 
 body.light .sidebar{
-background:white;
+background:rgba(255,255,255,0.85);
 border-right:1px solid #ddd;
 }
 
 body.light .topbar{
-background:white;
+background:rgba(255,255,255,0.8);
 border-bottom:1px solid #ddd;
 }
 
@@ -296,7 +303,7 @@ color:black;
 }
 
 /* =========================
-RED SECRET THEME
+RED THEME
 ========================= */
 
 body.red-theme{
@@ -338,6 +345,7 @@ width:95%;
 }
 
 }
+
 </style>
 </head>
 <body>
@@ -346,58 +354,57 @@ width:95%;
 
 <div class="auth" id="authScreen">
 
-  <div class="auth-box">
+<div class="auth-box">
 
-    <div class="auth-title">
-      Bienvenue sur WaMail
-    </div>
+<div class="auth-title">
+Bienvenue sur WaMail
+</div>
 
-    <input type="email" id="email" placeholder="Adresse mail">
+<input type="email" id="email" placeholder="Adresse mail">
 
-    <input type="password" id="password" placeholder="Mot de passe">
+<input type="password" id="password" placeholder="Mot de passe">
 
-    <button class="auth-btn" id="authBtn">
-      Connexion
-    </button>
+<button class="auth-btn" id="authBtn">
+Connexion
+</button>
 
-    <div class="switch" id="switchMode">
-      Pas encore de compte ? Inscription
-    </div>
+<div class="switch" id="switchMode">
+Pas encore de compte ? Inscription
+</div>
 
-  </div>
-
+</div>
 </div>
 
 <!-- SIDEBAR -->
 
 <div class="sidebar">
 
-  <div class="logo">
-    <img src="logo.png" class="logo-img">
-    <span>WaMail</span>
-  </div>
+<div class="logo">
+<img src="logo.png" class="logo-img">
+<span>WaMail</span>
+</div>
 
-  <button class="compose-btn" id="composeBtn">
-    Nouveau message
-  </button>
+<button class="compose-btn" id="composeBtn">
+Nouveau message
+</button>
 
-  <div class="menu-item" onclick="openFolder('inbox')">
-    📥 Réception
-  </div>
+<div class="menu-item" onclick="openFolder('inbox')">
+📥 Réception
+</div>
 
-  <div class="menu-item" onclick="openFolder('sent')">
-    📤 Envoyés
-  </div>
+<div class="menu-item" onclick="openFolder('sent')">
+📤 Envoyés
+</div>
 
-  <div class="menu-item" onclick="openFolder('spam')">
-    🚫 Spam
-  </div>
+<div class="menu-item" onclick="openFolder('spam')">
+🚫 Spam
+</div>
 
-  <div id="customFolders"></div>
+<div id="customFolders"></div>
 
-  <div class="menu-item" onclick="createFolder()">
-    ➕ Nouveau dossier
-  </div>
+<div class="menu-item" onclick="createFolder()">
+➕ Nouveau dossier
+</div>
 
 </div>
 
@@ -405,33 +412,47 @@ width:95%;
 
 <div class="main">
 
-  <div class="topbar">
+<div class="topbar">
 
-    <div id="folderTitle">
-      Boîte de réception
-    </div>
+<div id="folderTitle">
+Boîte de réception
+</div>
 
-    <div style="display:flex; gap:10px; align-items:center;">
+<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
 
-      <button id="themeBtn" class="top-btn">
-        🌙
-      </button>
+<button id="themeBtn" class="top-btn">
+🌙
+</button>
 
-      <button id="notifBtn" class="top-btn">
-        🔔
-      </button>
+<button id="notifBtn" class="top-btn">
+🔔
+</button>
 
-      <div class="user" id="currentUser"></div>
+<button id="bgBtn" class="top-btn">
+🖼️ Fond
+</button>
 
-      <button id="logoutBtn" class="top-btn logout">
-        Déconnexion
-      </button>
+<button id="urlBgBtn" class="top-btn">
+🌐 URL
+</button>
 
-    </div>
+<button id="resetBgBtn" class="top-btn">
+❌ Fond
+</button>
 
-  </div>
+<input type="file" id="bgUpload" accept="image/*" hidden>
 
-  <div class="mail-list" id="mailList"></div>
+<div class="user" id="currentUser"></div>
+
+<button id="logoutBtn" class="top-btn logout">
+Déconnexion
+</button>
+
+</div>
+
+</div>
+
+<div class="mail-list" id="mailList"></div>
 
 </div>
 
@@ -439,23 +460,22 @@ width:95%;
 
 <div class="modal" id="modal">
 
-  <div class="modal-content">
+<div class="modal-content">
 
-    <input type="email" id="receiver" placeholder="Destinataire">
+<input type="email" id="receiver" placeholder="Destinataire">
 
-    <input type="text" id="subject" placeholder="Sujet">
+<input type="text" id="subject" placeholder="Sujet">
 
-    <textarea id="content" placeholder="Votre message..."></textarea>
+<textarea id="content" placeholder="Votre message..."></textarea>
 
-    <button class="send-btn" id="sendBtn">
-      Envoyer
-    </button>
-
-  </div>
+<button class="send-btn" id="sendBtn">
+Envoyer
+</button>
 
 </div>
 
-<!-- SON NOTIF -->
+</div>
+
 <audio id="notifSound" src="notification.mp3"></audio>
 
 <script>
@@ -468,12 +488,12 @@ const SUPABASE_URL =
 "https://hulbzibpjpycbasuxuqs.supabase.co";
 
 const SUPABASE_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1bGJ6aWJwanB5Y2Jhc3V4dXFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3ODUwMjAsImV4cCI6MjA5NTM2MTAyMH0.nW2IZp0Jd7L5nGM0ZzC-jvpLxenoHK2yelT1L2359oU";
+"TON_ANON_KEY";
 
 const client =
 supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
+SUPABASE_URL,
+SUPABASE_KEY
 );
 
 // =========================
@@ -514,55 +534,55 @@ document.getElementById("themeBtn");
 
 switchMode.onclick = () => {
 
-  isLogin = !isLogin;
+isLogin = !isLogin;
 
-  authBtn.innerText =
-  isLogin
-  ? "Connexion"
-  : "Inscription";
+authBtn.innerText =
+isLogin
+? "Connexion"
+: "Inscription";
 
-  switchMode.innerText =
-  isLogin
-  ? "Pas encore de compte ? Inscription"
-  : "Déjà un compte ? Connexion";
+switchMode.innerText =
+isLogin
+? "Pas encore de compte ? Inscription"
+: "Déjà un compte ? Connexion";
 
 };
 
 authBtn.onclick = async () => {
 
-  const email =
-  document.getElementById("email").value;
+const email =
+document.getElementById("email").value;
 
-  const password =
-  document.getElementById("password").value;
+const password =
+document.getElementById("password").value;
 
-  if(isLogin){
+if(isLogin){
 
-    const { error } =
-    await client.auth.signInWithPassword({
-      email,
-      password
-    });
+const { error } =
+await client.auth.signInWithPassword({
+email,
+password
+});
 
-    if(error){
-      alert(error.message);
-    }
+if(error){
+alert(error.message);
+}
 
-  }else{
+}else{
 
-    const { error } =
-    await client.auth.signUp({
-      email,
-      password
-    });
+const { error } =
+await client.auth.signUp({
+email,
+password
+});
 
-    if(error){
-      alert(error.message);
-    }else{
-      alert("Compte créé !");
-    }
+if(error){
+alert(error.message);
+}else{
+alert("Compte créé !");
+}
 
-  }
+}
 
 };
 
@@ -573,24 +593,24 @@ authBtn.onclick = async () => {
 client.auth.onAuthStateChange(
 async (event, session) => {
 
-  if(session){
+if(session){
 
-    currentUser = session.user;
+currentUser = session.user;
 
-    authScreen.style.display = "none";
+authScreen.style.display = "none";
 
-    currentUserText.innerText =
-    currentUser.email;
+currentUserText.innerText =
+currentUser.email;
 
-    loadMessages();
+loadMessages();
 
-    checkNotifications();
+checkNotifications();
 
-  }else{
+}else{
 
-    authScreen.style.display = "flex";
+authScreen.style.display = "flex";
 
-  }
+}
 
 });
 
@@ -600,95 +620,100 @@ async (event, session) => {
 
 async function loadMessages(){
 
-  if(!currentUser) return;
+if(!currentUser) return;
 
-  let query = client
-  .from("messages")
-  .select("*")
-  .order("created_at", {
-    ascending:false
-  });
+let query = client
+.from("messages")
+.select("*")
+.order("created_at", {
+ascending:false
+});
 
-  if(currentFolder === "inbox"){
+if(currentFolder === "inbox"){
 
-    query =
-    query.eq(
-      "receiver",
-      currentUser.email
-    );
+query =
+query.eq(
+"receiver",
+currentUser.email
+);
 
-  }
+}
 
-  else if(currentFolder === "sent"){
+else if(currentFolder === "sent"){
 
-    query =
-    query.eq(
-      "sender",
-      currentUser.email
-    );
+query =
+query.eq(
+"sender",
+currentUser.email
+);
 
-  }
+}
 
-  else if(currentFolder === "spam"){
+else if(currentFolder === "spam"){
 
-    query =
-    query.eq(
-      "folder",
-      "spam"
-    );
+query =
+query.eq(
+"folder",
+"spam"
+);
 
-  }
+}
 
-  else{
+else{
 
-    query =
-    query.eq(
-      "folder",
-      currentFolder
-    );
+query =
+query.eq(
+"folder",
+currentFolder
+);
 
-  }
+}
 
-  const { data } = await query;
+const { data,error } = await query;
 
-  mailList.innerHTML = "";
+if(error){
+console.error(error);
+return;
+}
 
-  if(!data) return;
+mailList.innerHTML = "";
 
-  data.forEach(mail => {
+if(!data) return;
 
-    const div =
-    document.createElement("div");
+data.forEach(mail => {
 
-    div.className = "mail";
+const div =
+document.createElement("div");
 
-    div.innerHTML = `
-      <div class="mail-subject">
-        ${mail.subject || "Sans sujet"}
-      </div>
+div.className = "mail";
 
-      <div>
-        De : ${mail.sender}
-      </div>
+div.innerHTML = `
+<div class="mail-subject">
+${mail.subject || "Sans sujet"}
+</div>
 
-      <div class="mail-preview">
-        ${mail.content.slice(0,100)}
-      </div>
-    `;
+<div>
+De : ${mail.sender}
+</div>
 
-    div.onclick = () => {
+<div class="mail-preview">
+${mail.content.slice(0,100)}
+</div>
+`;
 
-      alert(
-        "Sujet : " + mail.subject +
-        "\\n\\nDe : " + mail.sender +
-        "\\n\\n" + mail.content
-      );
+div.onclick = () => {
 
-    };
+alert(
+"Sujet : " + mail.subject +
+"\n\nDe : " + mail.sender +
+"\n\n" + mail.content
+);
 
-    mailList.appendChild(div);
+};
 
-  });
+mailList.appendChild(div);
+
+});
 
 }
 
@@ -698,13 +723,13 @@ async function loadMessages(){
 
 function openFolder(folder){
 
-  currentFolder = folder;
+currentFolder = folder;
 
-  document.getElementById(
-    "folderTitle"
-  ).innerText = folder;
+document.getElementById(
+"folderTitle"
+).innerText = folder;
 
-  loadMessages();
+loadMessages();
 
 }
 
@@ -715,73 +740,73 @@ localStorage.getItem("folders")
 
 function renderFolders(){
 
-  const container =
-  document.getElementById(
-    "customFolders"
-  );
+const container =
+document.getElementById(
+"customFolders"
+);
 
-  container.innerHTML = "";
+container.innerHTML = "";
 
-  folders.forEach(folder => {
+folders.forEach(folder => {
 
-    const div =
-    document.createElement("div");
+const div =
+document.createElement("div");
 
-    div.className = "menu-item";
+div.className = "menu-item";
 
-    div.innerHTML = `
-      📁 ${folder}
-      <span style="float:right;color:red;">
-        ✖
-      </span>
-    `;
+div.innerHTML = `
+📁 ${folder}
+<span style="float:right;color:red;">
+✖
+</span>
+`;
 
-    div.onclick = () => {
+div.onclick = () => {
 
-      openFolder(folder);
+openFolder(folder);
 
-    };
+};
 
-    div.querySelector("span")
-    .onclick = (e) => {
+div.querySelector("span")
+.onclick = (e) => {
 
-      e.stopPropagation();
+e.stopPropagation();
 
-      folders =
-      folders.filter(
-        f => f !== folder
-      );
+folders =
+folders.filter(
+f => f !== folder
+);
 
-      localStorage.setItem(
-        "folders",
-        JSON.stringify(folders)
-      );
+localStorage.setItem(
+"folders",
+JSON.stringify(folders)
+);
 
-      renderFolders();
+renderFolders();
 
-    };
+};
 
-    container.appendChild(div);
+container.appendChild(div);
 
-  });
+});
 
 }
 
 function createFolder(){
 
-  const name =
-  prompt("Nom du dossier");
+const name =
+prompt("Nom du dossier");
 
-  if(!name) return;
+if(!name) return;
 
-  folders.push(name);
+folders.push(name);
 
-  localStorage.setItem(
-    "folders",
-    JSON.stringify(folders)
-  );
+localStorage.setItem(
+"folders",
+JSON.stringify(folders)
+);
 
-  renderFolders();
+renderFolders();
 
 }
 
@@ -795,17 +820,17 @@ document.getElementById(
 "composeBtn"
 ).onclick = () => {
 
-  modal.style.display = "flex";
+modal.style.display = "flex";
 
 };
 
 modal.onclick = (e) => {
 
-  if(e.target === modal){
+if(e.target === modal){
 
-    modal.style.display = "none";
+modal.style.display = "none";
 
-  }
+}
 
 };
 
@@ -817,61 +842,61 @@ document.getElementById(
 "sendBtn"
 ).onclick = async () => {
 
-  const receiver =
-  document.getElementById("receiver").value;
+const receiver =
+document.getElementById("receiver").value;
 
-  const subject =
-  document.getElementById("subject").value;
+const subject =
+document.getElementById("subject").value;
 
-  const content =
-  document.getElementById("content").value;
+const content =
+document.getElementById("content").value;
 
-  if(!receiver || !content){
+if(!receiver || !content){
 
-    alert("Message incomplet");
+alert("Message incomplet");
 
-    return;
+return;
 
-  }
+}
 
-  const { error } =
-  await client
-  .from("messages")
-  .insert({
+const { error } =
+await client
+.from("messages")
+.insert({
 
-    sender: currentUser.email,
-    receiver,
-    subject,
-    content,
-    folder:"inbox"
+sender: currentUser.email,
+receiver,
+subject,
+content,
+folder:"inbox"
 
-  });
+});
 
-  if(error){
+if(error){
 
-    alert(error.message);
+alert(error.message);
 
-  }else{
+}else{
 
-    alert("Message envoyé !");
+alert("Message envoyé !");
 
-    modal.style.display = "none";
+modal.style.display = "none";
 
-    document.getElementById(
-    "receiver"
-    ).value = "";
+document.getElementById(
+"receiver"
+).value = "";
 
-    document.getElementById(
-    "subject"
-    ).value = "";
+document.getElementById(
+"subject"
+).value = "";
 
-    document.getElementById(
-    "content"
-    ).value = "";
+document.getElementById(
+"content"
+).value = "";
 
-    loadMessages();
+loadMessages();
 
-  }
+}
 
 };
 
@@ -883,15 +908,15 @@ document.getElementById(
 "logoutBtn"
 ).onclick = async () => {
 
-  await client.auth.signOut();
+await client.auth.signOut();
 
-  currentUser = null;
+currentUser = null;
 
-  authScreen.style.display = "flex";
+authScreen.style.display = "flex";
 
-  currentUserText.innerText = "";
+currentUserText.innerText = "";
 
-  mailList.innerHTML = "";
+mailList.innerHTML = "";
 
 };
 
@@ -905,28 +930,28 @@ localStorage.getItem("theme")
 
 function updateTheme(){
 
-  if(darkMode){
+if(darkMode){
 
-    document.body.classList.remove(
-      "light"
-    );
+document.body.classList.remove(
+"light"
+);
 
-    themeBtn.innerText = "🌙";
+themeBtn.innerText = "🌙";
 
-  }else{
+}else{
 
-    document.body.classList.add(
-      "light"
-    );
+document.body.classList.add(
+"light"
+);
 
-    themeBtn.innerText = "☀️";
+themeBtn.innerText = "☀️";
 
-  }
+}
 
-  localStorage.setItem(
-    "theme",
-    darkMode ? "dark" : "light"
-  );
+localStorage.setItem(
+"theme",
+darkMode ? "dark" : "light"
+);
 
 }
 
@@ -934,9 +959,9 @@ updateTheme();
 
 themeBtn.onclick = () => {
 
-  darkMode = !darkMode;
+darkMode = !darkMode;
 
-  updateTheme();
+updateTheme();
 
 };
 
@@ -950,38 +975,38 @@ document.addEventListener(
 "keydown",
 (e) => {
 
-  typedKeys +=
-  e.key.toLowerCase();
+typedKeys +=
+e.key.toLowerCase();
 
-  if(typedKeys.length > 20){
+if(typedKeys.length > 20){
 
-    typedKeys =
-    typedKeys.slice(-20);
+typedKeys =
+typedKeys.slice(-20);
 
-  }
+}
 
-  if(
-    typedKeys.includes("wared")
-  ){
+if(
+typedKeys.includes("wared")
+){
 
-    document.body.classList.toggle(
-      "red-theme"
-    );
+document.body.classList.toggle(
+"red-theme"
+);
 
-    if(
-      Notification.permission
-      === "granted"
-    ){
+if(
+Notification.permission
+=== "granted"
+){
 
-      new Notification(
-        "❤️ Mode soutien activé"
-      );
+new Notification(
+"❤️ Mode soutien activé"
+);
 
-    }
+}
 
-    typedKeys = "";
+typedKeys = "";
 
-  }
+}
 
 });
 
@@ -993,69 +1018,69 @@ document.getElementById(
 "notifBtn"
 ).onclick = async () => {
 
-  const permission =
-  await Notification
-  .requestPermission();
+const permission =
+await Notification
+.requestPermission();
 
-  if(permission === "granted"){
+if(permission === "granted"){
 
-    alert(
-      "Notifications activées !"
-    );
+alert(
+"Notifications activées !"
+);
 
-  }
+}
 
 };
 
 async function checkNotifications(){
 
-  if(!currentUser) return;
+if(!currentUser) return;
 
-  const { data } =
-  await client
-  .from("messages")
-  .select("*")
-  .eq(
-    "receiver",
-    currentUser.email
-  );
+const { data } =
+await client
+.from("messages")
+.select("*")
+.eq(
+"receiver",
+currentUser.email
+);
 
-  if(!data) return;
+if(!data) return;
 
-  if(
-    knownMessages !== 0 &&
-    data.length > knownMessages
-  ){
+if(
+knownMessages !== 0 &&
+data.length > knownMessages
+){
 
-    const latest =
-    data[data.length - 1];
+const latest =
+data[data.length - 1];
 
-    if(
-      Notification.permission
-      === "granted"
-    ){
+if(
+Notification.permission
+=== "granted"
+){
 
-      document
-      .getElementById(
-        "notifSound"
-      )
-      .play();
+document
+.getElementById(
+"notifSound"
+)
+.play();
 
-      new Notification(
-        "Nouveau message",
-        {
-          body:
-          latest.sender +
-          " : " +
-          latest.subject
-        }
-      );
+new Notification(
+"Nouveau message",
+{
+body:
+latest.sender +
+" : " +
+latest.subject
+}
+);
 
-    }
+}
 
-  }
+}
 
-  knownMessages = data.length;
+knownMessages = data.length;
 
 }
 
@@ -1072,6 +1097,103 @@ setInterval(
 checkNotifications,
 3000
 );
+
+// =========================
+// CUSTOM BACKGROUND
+// =========================
+
+const bgBtn =
+document.getElementById("bgBtn");
+
+const bgUpload =
+document.getElementById("bgUpload");
+
+const resetBgBtn =
+document.getElementById("resetBgBtn");
+
+// Charger fond sauvegardé
+
+const savedBg =
+localStorage.getItem("customBg");
+
+if(savedBg){
+
+document.body.style.backgroundImage =
+`url(${savedBg})`;
+
+}
+
+// Upload image PC
+
+bgBtn.onclick = () => {
+
+bgUpload.click();
+
+};
+
+bgUpload.onchange = (e) => {
+
+const file =
+e.target.files[0];
+
+if(!file) return;
+
+const reader =
+new FileReader();
+
+reader.onload = () => {
+
+const image =
+reader.result;
+
+document.body.style.backgroundImage =
+`url(${image})`;
+
+localStorage.setItem(
+"customBg",
+image
+);
+
+};
+
+reader.readAsDataURL(file);
+
+};
+
+// Fond URL Google
+
+document.getElementById(
+"urlBgBtn"
+).onclick = () => {
+
+const url =
+prompt(
+"Colle le lien de l'image"
+);
+
+if(!url) return;
+
+document.body.style.backgroundImage =
+`url(${url})`;
+
+localStorage.setItem(
+"customBg",
+url
+);
+
+};
+
+// Reset fond
+
+resetBgBtn.onclick = () => {
+
+document.body.style.backgroundImage = "";
+
+localStorage.removeItem(
+"customBg"
+);
+
+};
 
 </script>
 
