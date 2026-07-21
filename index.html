@@ -3,1199 +3,189 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>WaMail</title>
-
-<link rel="icon" type="image/png" href="logo.png">
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<title>Wamail (mai - juillet 2026)</title>
 
 <style>
-
 *{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,sans-serif;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
 }
 
 body{
-background:#111;
-color:white;
-height:100vh;
-display:flex;
-transition:0.3s;
-background-size:cover;
-background-position:center;
-background-repeat:no-repeat;
+    background:#000;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    padding:20px;
 }
 
-/* =========================
-SIDEBAR
-========================= */
+.fenetre{
+    width:90%;
+    max-width:850px;
+    background:#111;
+    border:1px solid #2b2b2b;
+    border-radius:15px;
+    overflow:hidden;
+    box-shadow:0 0 35px rgba(255,255,255,.08);
+}
 
-.sidebar{
-width:250px;
-background:#1b1b1b;
-padding:20px;
-border-right:1px solid #333;
-transition:0.3s;
-overflow-y:auto;
-backdrop-filter:blur(8px);
+/* ---------- Interface Mail ---------- */
+
+.barre-mail{
+    background:#181818;
+    border-bottom:1px solid #2a2a2a;
+}
+
+.toolbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px 18px;
+    border-bottom:1px solid #2a2a2a;
+}
+
+.btn-envoyer{
+    background:#1976ff;
+    color:#fff;
+    border:none;
+    padding:8px 18px;
+    border-radius:6px;
+    font-size:14px;
+    font-weight:bold;
+    opacity:.55;
+    cursor:not-allowed;
+}
+
+.etat{
+    color:#888;
+    font-size:14px;
+}
+
+.champ{
+    display:flex;
+    align-items:center;
+    padding:12px 18px;
+    border-bottom:1px solid #242424;
+}
+
+.champ span{
+    width:70px;
+    color:#cfcfcf;
+    font-weight:bold;
+}
+
+.champ input{
+    flex:1;
+    background:transparent;
+    border:none;
+    color:white;
+    font-size:15px;
+    outline:none;
+}
+
+/* ---------- Contenu ---------- */
+
+.contenu{
+    padding:40px;
+}
+
+h1{
+    text-align:center;
+    color:#fff;
+    margin-bottom:25px;
+    font-size:34px;
+}
+
+.texte{
+    color:#d0d0d0;
+    font-size:18px;
+    line-height:1.8;
+    text-align:center;
 }
 
 .logo{
-display:flex;
-align-items:center;
-gap:10px;
-font-size:28px;
-font-weight:bold;
-margin-bottom:30px;
-color:#4ea1ff;
+    display:block;
+    width:140px;
+    margin:35px auto 15px auto;
+    opacity:.95;
+    transition:.3s;
 }
 
-.logo-img{
-width:42px;
-height:42px;
-object-fit:contain;
+.logo:hover{
+    transform:scale(1.05);
+    opacity:1;
 }
 
-.compose-btn{
-width:100%;
-padding:14px;
-border:none;
-border-radius:12px;
-background:#4ea1ff;
-color:white;
-font-size:16px;
-cursor:pointer;
-margin-bottom:20px;
+footer{
+    text-align:center;
+    color:#666;
+    font-size:12px;
+    padding:18px;
+    border-top:1px solid #222;
 }
-
-.menu-item{
-padding:12px;
-border-radius:10px;
-cursor:pointer;
-margin-bottom:8px;
-transition:0.2s;
-}
-
-.menu-item:hover{
-background:#2b2b2b;
-}
-
-/* =========================
-MAIN
-========================= */
-
-.main{
-flex:1;
-display:flex;
-flex-direction:column;
-backdrop-filter:blur(5px);
-}
-
-.topbar{
-padding:15px;
-border-bottom:1px solid #333;
-display:flex;
-justify-content:space-between;
-align-items:center;
-background:rgba(24,24,24,0.8);
-transition:0.3s;
-backdrop-filter:blur(10px);
-}
-
-.user{
-font-size:14px;
-opacity:0.8;
-}
-
-.mail-list{
-flex:1;
-overflow-y:auto;
-}
-
-.mail{
-padding:18px;
-border-bottom:1px solid #222;
-cursor:pointer;
-transition:0.2s;
-background:rgba(0,0,0,0.2);
-}
-
-.mail:hover{
-background:rgba(255,255,255,0.05);
-}
-
-.mail-subject{
-font-weight:bold;
-margin-bottom:6px;
-}
-
-.mail-preview{
-opacity:0.7;
-font-size:14px;
-}
-
-/* =========================
-MODAL
-========================= */
-
-.modal{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,0.6);
-display:none;
-justify-content:center;
-align-items:center;
-}
-
-.modal-content{
-width:500px;
-background:#1a1a1a;
-padding:20px;
-border-radius:14px;
-display:flex;
-flex-direction:column;
-gap:12px;
-transition:0.3s;
-}
-
-input,textarea{
-background:#111;
-border:1px solid #333;
-padding:12px;
-color:white;
-border-radius:8px;
-}
-
-textarea{
-height:200px;
-resize:none;
-}
-
-.send-btn{
-background:#4ea1ff;
-border:none;
-padding:12px;
-color:white;
-border-radius:8px;
-cursor:pointer;
-}
-
-/* =========================
-AUTH
-========================= */
-
-.auth{
-position:fixed;
-inset:0;
-display:flex;
-justify-content:center;
-align-items:center;
-background:#0d0d0d;
-z-index:999;
-}
-
-.auth-box{
-background:#1a1a1a;
-padding:30px;
-border-radius:18px;
-width:350px;
-display:flex;
-flex-direction:column;
-gap:12px;
-}
-
-.auth-title{
-font-size:28px;
-font-weight:bold;
-text-align:center;
-margin-bottom:10px;
-}
-
-.auth-btn{
-padding:12px;
-border:none;
-border-radius:10px;
-background:#4ea1ff;
-color:white;
-cursor:pointer;
-}
-
-.switch{
-text-align:center;
-font-size:14px;
-opacity:0.7;
-cursor:pointer;
-}
-
-/* =========================
-BUTTONS
-========================= */
-
-.top-btn{
-padding:10px 14px;
-border:none;
-border-radius:10px;
-cursor:pointer;
-background:#2a2a2a;
-color:white;
-transition:0.2s;
-}
-
-.top-btn:hover{
-opacity:0.8;
-}
-
-.logout{
-background:#ff4e4e;
-}
-
-/* =========================
-LIGHT THEME
-========================= */
-
-body.light{
-background:#f4f4f4;
-color:#111;
-}
-
-body.light .sidebar{
-background:rgba(255,255,255,0.85);
-border-right:1px solid #ddd;
-}
-
-body.light .topbar{
-background:rgba(255,255,255,0.8);
-border-bottom:1px solid #ddd;
-}
-
-body.light .mail{
-border-bottom:1px solid #ddd;
-}
-
-body.light .mail:hover{
-background:#ececec;
-}
-
-body.light .modal-content,
-body.light .auth-box{
-background:white;
-color:black;
-}
-
-body.light input,
-body.light textarea{
-background:#f1f1f1;
-color:black;
-border:1px solid #ccc;
-}
-
-body.light .menu-item:hover{
-background:#ececec;
-}
-
-body.light .top-btn{
-background:#ddd;
-color:black;
-}
-
-/* =========================
-RED THEME
-========================= */
-
-body.red-theme{
-background:#2b0000;
-color:white;
-}
-
-body.red-theme .sidebar{
-background:#3a0000;
-border-right:1px solid #700;
-}
-
-body.red-theme .topbar{
-background:#400000;
-border-bottom:1px solid #700;
-}
-
-body.red-theme .compose-btn,
-body.red-theme .send-btn{
-background:#ff2e2e;
-}
-
-body.red-theme .logo{
-color:#ff4e4e;
-}
-
-/* =========================
-RESPONSIVE
-========================= */
-
-@media(max-width:700px){
-
-.sidebar{
-display:none;
-}
-
-.modal-content{
-width:95%;
-}
-
-}
-
 </style>
+
 </head>
 <body>
 
-<!-- AUTH -->
+<div class="fenetre">
 
-<div class="auth" id="authScreen">
+    <div class="barre-mail">
 
-<div class="auth-box">
+        <div class="toolbar">
+            <button class="btn-envoyer" disabled>Envoyer</button>
+            <span class="etat">Brouillon</span>
+        </div>
 
-<div class="auth-title">
-Bienvenue sur WaMail
-</div>
+        <div class="champ">
+            <span>De :</span>
+            <input type="text" value="staff@wamail" readonly>
+        </div>
 
-<input type="email" id="email" placeholder="Adresse mail">
+        <div class="champ">
+            <span>À :</span>
+            <input type="text" value="Tous les utilisateurs" readonly>
+        </div>
 
-<input type="password" id="password" placeholder="Mot de passe">
+        <div class="champ">
+            <span>Objet :</span>
+            <input type="text" value="Fermeture définitive de Wamail" readonly>
+        </div>
 
-<button class="auth-btn" id="authBtn">
-Connexion
-</button>
+    </div>
 
-<div class="switch" id="switchMode">
-Pas encore de compte ? Inscription
-</div>
+    <div class="contenu">
 
-</div>
-</div>
+        <h1>Wamail</h1>
 
-<!-- SIDEBAR -->
+        <div class="texte">
+            C'est malheureusement avec mépris et avec tristesse que nous vous annonçons la fermeture de ce site qui avait une grande ambition et un but précis.<br><br>
 
-<div class="sidebar">
+            Malheureusement, les serveurs ont fermé et il est désormais impossible pour nous de remettre les services en marche.<br><br>
 
-<div class="logo">
-<img src="logo.png" class="logo-img">
-<span>WaMail</span>
-</div>
+            Nous n'allons pas recréer de service de messagerie, car notre collègue <strong>Diffin</strong>, avec un collaborateur <strong>L.O.I</strong>, a créé <strong>Lmail</strong>, directement connecté à <strong>Lnet</strong>.<br><br>
 
-<button class="compose-btn" id="composeBtn">
-Nouveau message
-</button>
+            Merci de nous avoir suivis de <strong>mai à juillet 2026</strong> et nous vous souhaitons une excellente visite sur <strong>Lnet</strong>.<br><br>
 
-<div class="menu-item" onclick="openFolder('inbox')">
-📥 Réception
-</div>
+            Le groupe <strong>Yotvin</strong> se dissocie désormais en trois groupes :
+            <br><br>
+            <strong>Yotvin</strong><br>
+            <strong>Bilucid</strong><br>
+            <strong>STAC</strong>
+        </div>
 
-<div class="menu-item" onclick="openFolder('sent')">
-📤 Envoyés
-</div>
+        <img src="logo.png" alt="Logo Wamail" class="logo">
 
-<div class="menu-item" onclick="openFolder('spam')">
-🚫 Spam
-</div>
+    </div>
 
-<div id="customFolders"></div>
-
-<div class="menu-item" onclick="createFolder()">
-➕ Nouveau dossier
-</div>
+    <footer>
+        Merci de votre compréhension.
+    </footer>
 
 </div>
-
-<!-- MAIN -->
-
-<div class="main">
-
-<div class="topbar">
-
-<div id="folderTitle">
-Boîte de réception
-</div>
-
-<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-
-<button id="themeBtn" class="top-btn">
-🌙
-</button>
-
-<button id="notifBtn" class="top-btn">
-🔔
-</button>
-
-<button id="bgBtn" class="top-btn">
-🖼️ Fond
-</button>
-
-<button id="urlBgBtn" class="top-btn">
-🌐 URL
-</button>
-
-<button id="resetBgBtn" class="top-btn">
-❌ Fond
-</button>
-
-<input type="file" id="bgUpload" accept="image/*" hidden>
-
-<div class="user" id="currentUser"></div>
-
-<button id="logoutBtn" class="top-btn logout">
-Déconnexion
-</button>
-
-</div>
-
-</div>
-
-<div class="mail-list" id="mailList"></div>
-
-</div>
-
-<!-- MODAL -->
-
-<div class="modal" id="modal">
-
-<div class="modal-content">
-
-<input type="email" id="receiver" placeholder="Destinataire">
-
-<input type="text" id="subject" placeholder="Sujet">
-
-<textarea id="content" placeholder="Votre message..."></textarea>
-
-<button class="send-btn" id="sendBtn">
-Envoyer
-</button>
-
-</div>
-
-</div>
-
-<audio id="notifSound" src="notification.mp3"></audio>
-
-<script>
-
-// =========================
-// SUPABASE
-// =========================
-
-const SUPABASE_URL =
-"https://hulbzibpjpycbasuxuqs.supabase.co";
-
-const SUPABASE_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1bGJ6aWJwanB5Y2Jhc3V4dXFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3ODUwMjAsImV4cCI6MjA5NTM2MTAyMH0.nW2IZp0Jd7L5nGM0ZzC-jvpLxenoHK2yelT1L2359oU";
-
-const client =
-supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
-);
-
-// =========================
-
-let isLogin = true;
-let currentUser = null;
-let currentFolder = "inbox";
-let knownMessages = 0;
-
-// =========================
-// ELEMENTS
-// =========================
-
-const authScreen =
-document.getElementById("authScreen");
-
-const authBtn =
-document.getElementById("authBtn");
-
-const switchMode =
-document.getElementById("switchMode");
-
-const mailList =
-document.getElementById("mailList");
-
-const currentUserText =
-document.getElementById("currentUser");
-
-const modal =
-document.getElementById("modal");
-
-const themeBtn =
-document.getElementById("themeBtn");
-
-// =========================
-// LOGIN / REGISTER
-// =========================
-
-switchMode.onclick = () => {
-
-isLogin = !isLogin;
-
-authBtn.innerText =
-isLogin
-? "Connexion"
-: "Inscription";
-
-switchMode.innerText =
-isLogin
-? "Pas encore de compte ? Inscription"
-: "Déjà un compte ? Connexion";
-
-};
-
-authBtn.onclick = async () => {
-
-const email =
-document.getElementById("email").value;
-
-const password =
-document.getElementById("password").value;
-
-if(isLogin){
-
-const { error } =
-await client.auth.signInWithPassword({
-email,
-password
-});
-
-if(error){
-alert(error.message);
-}
-
-}else{
-
-const { error } =
-await client.auth.signUp({
-email,
-password
-});
-
-if(error){
-alert(error.message);
-}else{
-alert("Compte créé !");
-}
-
-}
-
-};
-
-// =========================
-// AUTH STATE
-// =========================
-
-client.auth.onAuthStateChange(
-async (event, session) => {
-
-if(session){
-
-currentUser = session.user;
-
-authScreen.style.display = "none";
-
-currentUserText.innerText =
-currentUser.email;
-
-loadMessages();
-
-checkNotifications();
-
-}else{
-
-authScreen.style.display = "flex";
-
-}
-
-});
-
-// =========================
-// LOAD MESSAGES
-// =========================
-
-async function loadMessages(){
-
-if(!currentUser) return;
-
-let query = client
-.from("messages")
-.select("*")
-.order("created_at", {
-ascending:false
-});
-
-if(currentFolder === "inbox"){
-
-query =
-query.eq(
-"receiver",
-currentUser.email
-);
-
-}
-
-else if(currentFolder === "sent"){
-
-query =
-query.eq(
-"sender",
-currentUser.email
-);
-
-}
-
-else if(currentFolder === "spam"){
-
-query =
-query.eq(
-"folder",
-"spam"
-);
-
-}
-
-else{
-
-query =
-query.eq(
-"folder",
-currentFolder
-);
-
-}
-
-const { data,error } = await query;
-
-if(error){
-console.error(error);
-return;
-}
-
-mailList.innerHTML = "";
-
-if(!data) return;
-
-data.forEach(mail => {
-
-const div =
-document.createElement("div");
-
-div.className = "mail";
-
-div.innerHTML = `
-<div class="mail-subject">
-${mail.subject || "Sans sujet"}
-</div>
-
-<div>
-De : ${mail.sender}
-</div>
-
-<div class="mail-preview">
-${mail.content.slice(0,100)}
-</div>
-`;
-
-div.onclick = () => {
-
-alert(
-"Sujet : " + mail.subject +
-"\n\nDe : " + mail.sender +
-"\n\n" + mail.content
-);
-
-};
-
-mailList.appendChild(div);
-
-});
-
-}
-
-// =========================
-// FOLDERS
-// =========================
-
-function openFolder(folder){
-
-currentFolder = folder;
-
-document.getElementById(
-"folderTitle"
-).innerText = folder;
-
-loadMessages();
-
-}
-
-let folders =
-JSON.parse(
-localStorage.getItem("folders")
-) || [];
-
-function renderFolders(){
-
-const container =
-document.getElementById(
-"customFolders"
-);
-
-container.innerHTML = "";
-
-folders.forEach(folder => {
-
-const div =
-document.createElement("div");
-
-div.className = "menu-item";
-
-div.innerHTML = `
-📁 ${folder}
-<span style="float:right;color:red;">
-✖
-</span>
-`;
-
-div.onclick = () => {
-
-openFolder(folder);
-
-};
-
-div.querySelector("span")
-.onclick = (e) => {
-
-e.stopPropagation();
-
-folders =
-folders.filter(
-f => f !== folder
-);
-
-localStorage.setItem(
-"folders",
-JSON.stringify(folders)
-);
-
-renderFolders();
-
-};
-
-container.appendChild(div);
-
-});
-
-}
-
-function createFolder(){
-
-const name =
-prompt("Nom du dossier");
-
-if(!name) return;
-
-folders.push(name);
-
-localStorage.setItem(
-"folders",
-JSON.stringify(folders)
-);
-
-renderFolders();
-
-}
-
-renderFolders();
-
-// =========================
-// MODAL
-// =========================
-
-document.getElementById(
-"composeBtn"
-).onclick = () => {
-
-modal.style.display = "flex";
-
-};
-
-modal.onclick = (e) => {
-
-if(e.target === modal){
-
-modal.style.display = "none";
-
-}
-
-};
-
-// =========================
-// SEND MESSAGE
-// =========================
-
-document.getElementById(
-"sendBtn"
-).onclick = async () => {
-
-const receiver =
-document.getElementById("receiver").value;
-
-const subject =
-document.getElementById("subject").value;
-
-const content =
-document.getElementById("content").value;
-
-if(!receiver || !content){
-
-alert("Message incomplet");
-
-return;
-
-}
-
-const { error } =
-await client
-.from("messages")
-.insert({
-
-sender: currentUser.email,
-receiver,
-subject,
-content,
-folder:"inbox"
-
-});
-
-if(error){
-
-alert(error.message);
-
-}else{
-
-alert("Message envoyé !");
-
-modal.style.display = "none";
-
-document.getElementById(
-"receiver"
-).value = "";
-
-document.getElementById(
-"subject"
-).value = "";
-
-document.getElementById(
-"content"
-).value = "";
-
-loadMessages();
-
-}
-
-};
-
-// =========================
-// LOGOUT
-// =========================
-
-document.getElementById(
-"logoutBtn"
-).onclick = async () => {
-
-await client.auth.signOut();
-
-currentUser = null;
-
-authScreen.style.display = "flex";
-
-currentUserText.innerText = "";
-
-mailList.innerHTML = "";
-
-};
-
-// =========================
-// THEME
-// =========================
-
-let darkMode =
-localStorage.getItem("theme")
-!== "light";
-
-function updateTheme(){
-
-if(darkMode){
-
-document.body.classList.remove(
-"light"
-);
-
-themeBtn.innerText = "🌙";
-
-}else{
-
-document.body.classList.add(
-"light"
-);
-
-themeBtn.innerText = "☀️";
-
-}
-
-localStorage.setItem(
-"theme",
-darkMode ? "dark" : "light"
-);
-
-}
-
-updateTheme();
-
-themeBtn.onclick = () => {
-
-darkMode = !darkMode;
-
-updateTheme();
-
-};
-
-// =========================
-// SECRET RED THEME
-// =========================
-
-let typedKeys = "";
-
-document.addEventListener(
-"keydown",
-(e) => {
-
-typedKeys +=
-e.key.toLowerCase();
-
-if(typedKeys.length > 20){
-
-typedKeys =
-typedKeys.slice(-20);
-
-}
-
-if(
-typedKeys.includes("wared")
-){
-
-document.body.classList.toggle(
-"red-theme"
-);
-
-if(
-Notification.permission
-=== "granted"
-){
-
-new Notification(
-"Vous avez déclenché le mode soutien pour le cancer. réécrivez *wared* pour le désactiver"
-);
-
-}
-
-typedKeys = "";
-
-}
-
-});
-
-// =========================
-// NOTIFICATIONS
-// =========================
-
-document.getElementById(
-"notifBtn"
-).onclick = async () => {
-
-const permission =
-await Notification
-.requestPermission();
-
-if(permission === "granted"){
-
-alert(
-"Notifications activées !"
-);
-
-}
-
-};
-
-async function checkNotifications(){
-
-if(!currentUser) return;
-
-const { data } =
-await client
-.from("messages")
-.select("*")
-.eq(
-"receiver",
-currentUser.email
-);
-
-if(!data) return;
-
-if(
-knownMessages !== 0 &&
-data.length > knownMessages
-){
-
-const latest =
-data[data.length - 1];
-
-if(
-Notification.permission
-=== "granted"
-){
-
-document
-.getElementById(
-"notifSound"
-)
-.play();
-
-new Notification(
-"Nouveau message",
-{
-body:
-latest.sender +
-" : " +
-latest.subject
-}
-);
-
-}
-
-}
-
-knownMessages = data.length;
-
-}
-
-// =========================
-// AUTO REFRESH
-// =========================
-
-setInterval(
-loadMessages,
-3000
-);
-
-setInterval(
-checkNotifications,
-3000
-);
-
-// =========================
-// CUSTOM BACKGROUND
-// =========================
-
-const bgBtn =
-document.getElementById("bgBtn");
-
-const bgUpload =
-document.getElementById("bgUpload");
-
-const resetBgBtn =
-document.getElementById("resetBgBtn");
-
-// Charger fond sauvegardé
-
-const savedBg =
-localStorage.getItem("customBg");
-
-if(savedBg){
-
-document.body.style.backgroundImage =
-`url(${savedBg})`;
-
-}
-
-// Upload image PC
-
-bgBtn.onclick = () => {
-
-bgUpload.click();
-
-};
-
-bgUpload.onchange = (e) => {
-
-const file =
-e.target.files[0];
-
-if(!file) return;
-
-const reader =
-new FileReader();
-
-reader.onload = () => {
-
-const image =
-reader.result;
-
-document.body.style.backgroundImage =
-`url(${image})`;
-
-localStorage.setItem(
-"customBg",
-image
-);
-
-};
-
-reader.readAsDataURL(file);
-
-};
-
-// Fond URL Google
-
-document.getElementById(
-"urlBgBtn"
-).onclick = () => {
-
-const url =
-prompt(
-"Colle le lien de l'image"
-);
-
-if(!url) return;
-
-document.body.style.backgroundImage =
-`url(${url})`;
-
-localStorage.setItem(
-"customBg",
-url
-);
-
-};
-
-// Reset fond
-
-resetBgBtn.onclick = () => {
-
-document.body.style.backgroundImage = "";
-
-localStorage.removeItem(
-"customBg"
-);
-
-};
-
-</script>
 
 </body>
 </html>
