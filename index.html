@@ -1,174 +1,138 @@
-
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>devffin — en maintenance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f3f4f1;
+    --paper-2:#eceee9;
+    --ink:#15181a;
+    --ink-soft:#54595c;
+    --line:#d9dbd4;
+    --accent:#0e6b66;
+    --accent-soft:#e3ece9;
+    --accent-2:#c1762f;
+    --display: 'Space Grotesk', sans-serif;
+    --sans: 'IBM Plex Sans', sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    display:flex;
+    align-items:center;
     justify-content:center;
-    align-items:center;
-    min-height:100vh;
-    padding:20px;
-}
+    padding:24px;
+  }
+  a{color:var(--accent); text-decoration:none; border-bottom:1px solid transparent; transition:border-color .15s;}
+  a:hover{border-color:var(--accent);}
+  a:focus-visible{outline:2px solid var(--accent); outline-offset:3px;}
 
-.fenetre{
-    width:90%;
-    max-width:850px;
-    background:#111;
-    border:1px solid #2b2b2b;
-    border-radius:15px;
-    overflow:hidden;
-    box-shadow:0 0 35px rgba(255,255,255,.08);
-}
+  .card{
+    max-width:520px;
+    width:100%;
+    text-align:center;
+  }
 
-/* ---------- Interface Mail ---------- */
+  .logo{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--display); font-weight:700; font-size:1.05rem;
+    margin-bottom:56px;
+  }
+  .logo .dot{width:8px; height:8px; background:var(--accent); border-radius:1px; display:inline-block;}
 
-.barre-mail{
-    background:#181818;
-    border-bottom:1px solid #2a2a2a;
-}
+  .status-line{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--mono); font-size:.76rem; text-transform:uppercase;
+    letter-spacing:.1em; color:var(--accent-2);
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:6px 14px;
+    margin-bottom:28px;
+  }
+  .status-line .pulse{
+    width:7px; height:7px; border-radius:50%;
+    background:var(--accent-2);
+    animation:pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{opacity:1; transform:scale(1);}
+    50%{opacity:.4; transform:scale(.7);}
+  }
 
-.toolbar{
+  h1{
+    font-family:var(--display); font-weight:700;
+    font-size:clamp(2rem, 6vw, 2.8rem);
+    letter-spacing:-0.02em; line-height:1.05;
+    margin:0 0 18px;
+  }
+
+  p.lede{
+    color:var(--ink-soft);
+    font-size:1.02rem;
+    max-width:40ch;
+    margin:0 auto 40px;
+  }
+
+  .meta{
+    font-family:var(--mono);
+    font-size:.78rem;
+    color:var(--ink-soft);
+    border-top:1px solid var(--line);
+    padding-top:24px;
     display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:12px 18px;
-    border-bottom:1px solid #2a2a2a;
-}
+    flex-direction:column;
+    gap:8px;
+  }
+  .meta .row{display:flex; justify-content:space-between; gap:12px;}
+  .meta .row b{color:var(--ink); font-weight:500;}
 
-.btn-envoyer{
-    background:#1976ff;
-    color:#fff;
-    border:none;
-    padding:8px 18px;
-    border-radius:6px;
-    font-size:14px;
-    font-weight:bold;
-    opacity:.55;
-    cursor:not-allowed;
-}
+  .contact{
+    margin-top:32px;
+    font-size:.92rem;
+    color:var(--ink-soft);
+  }
 
-.etat{
-    color:#888;
-    font-size:14px;
-}
-
-.champ{
-    display:flex;
-    align-items:center;
-    padding:12px 18px;
-    border-bottom:1px solid #242424;
-}
-
-.champ span{
-    width:70px;
-    color:#cfcfcf;
-    font-weight:bold;
-}
-
-.champ input{
-    flex:1;
-    background:transparent;
-    border:none;
-    color:white;
-    font-size:15px;
-    outline:none;
-}
-
-/* ---------- Contenu ---------- */
-
-.contenu{
-    padding:40px;
-}
-
-h1{
-    text-align:center;
-    color:#fff;
-    margin-bottom:25px;
-    font-size:34px;
-}
-
-.texte{
-    color:#d0d0d0;
-    font-size:18px;
-    line-height:1.8;
-    text-align:center;
-}
-
-.logo{
-    display:block;
-    width:140px;
-    margin:35px auto 15px auto;
-    opacity:.95;
-    transition:.3s;
-}
-
-.logo:hover{
-    transform:scale(1.05);
-    opacity:1;
-}
-
-footer{
-    text-align:center;
-    color:#666;
-    font-size:12px;
-    padding:18px;
-    border-top:1px solid #222;
-}
+  @media (prefers-reduced-motion: reduce){
+    .pulse{animation:none;}
+  }
 </style>
-
 </head>
 <body>
 
-<div class="fenetre">
+  <div class="card">
+    <div class="logo"><span class="dot"></span>devffin</div>
 
-    <div class="barre-mail">
+    <div class="status-line"><span class="pulse"></span>Maintenance en cours</div>
 
-        <div class="toolbar">
-            <button class="btn-envoyer" disabled>Envoyer</button>
-            <span class="etat">Brouillon</span>
-        </div>
+    <h1>On répare le moteur.</h1>
+    <p class="lede">Le site est temporairement hors ligne le temps d'une intervention technique. Il sera de retour très bientôt.</p>
 
-        <div class="champ">
-            <span>De :</span>
-            <input type="text" value="staff@wamail" readonly>
-        </div>
-
-        <div class="champ">
-            <span>À :</span>
-            <input type="text" value="Tous les utilisateurs" readonly>
-        </div>
-
-        <div class="champ">
-            <span>Objet :</span>
-            <input type="text" value="Fermeture définitive de Wamail" readonly>
-        </div>
-
+    <div class="meta">
+      <div class="row"><span>Début</span><b id="start-time">—</b></div>
+      <div class="row"><span>Retour estimé</span><b>Sous peu</b></div>
+      <div class="row"><span>Statut</span><b>En cours</b></div>
     </div>
 
-    <div class="contenu">
+    <p class="contact">Une urgence&nbsp;? Écris à <a href="mailto:contact@devffin.dev">contact@devffin.dev</a></p>
+  </div>
 
-        <h1>Wamail</h1>
-
-        <div class="texte">
-            C'est malheureusement avec mépris et avec tristesse que nous vous annonçons la fermeture de ce site qui avait une grande ambition et un but précis.<br><br>
-
-            Malheureusement, les serveurs ont fermé et il est désormais impossible pour nous de remettre les services en marche.<br><br>
-
-            Nous n'allons pas recréer de service de messagerie, car notre collègue <strong>Diffin</strong>, avec un collaborateur <strong>L.O.I</strong>, a créé <strong>Lmail</strong>, directement connecté à <strong>Lnet</strong>.<br><br>
-
-            Merci de nous avoir suivis de <strong>mai à juillet 2026</strong> et nous vous souhaitons une excellente visite sur <strong>Lnet</strong>.<br><br>
-
-            Le groupe <strong>Yotvin</strong> se dissocie désormais en trois groupes :
-            <br><br>
-            <strong>Yotvin</strong><br>
-            <strong>Bilucid</strong><br>
-            <strong>STAC</strong>
-        </div>
-
-        <img src="logo.png" alt="Logo Wamail" class="logo">
-
-    </div>
-
-    <footer>
-        Merci de votre compréhension.
-    </footer>
-
-</div>
+<script>
+  document.getElementById('start-time').textContent =
+    new Date().toLocaleString('fr-FR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+</script>
 
 </body>
 </html>
